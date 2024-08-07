@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backtracking-Project</title>
+</head>
+<body>
+    <font size="6">
+        <b>Backtracking</b>
+     </font><br>
+         <font>Copyright ©2002 by David Matuszek</font>  
+         <p>Backtracking is a problem-solving algorithmic technique used to find solutions to problems incrementally by trying partial solutions and abandoning them if they fail to meet the criteria. It’s a method for solving problems where the solution is built step-by-step and, if a step doesn’t lead to a solution, the algorithm backtracks to the previous step to try a different path.</p>
+
+    <center>
+        <img src="https://imgs.search.brave.com/3_SQDb9-UIK2zPoQHdQz6_5HyPsqC4aKNxodBvkCVos/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/dHV0b3JpYWxzcG9p/bnQuY29tL2RhdGFf/c3RydWN0dXJlc19h/bGdvcml0aG1zL2lt/YWdlcy9iYWNrdHJh/Y2tpbmcuanBn" alt="404 error">
+    </center>
+    <ol type="1">
+        <li>Starting at Root, you try option A, but after failing with both C and D, you backtrack to Root. Then, you try option B, and after failing with E, you find F and succeed.</li>
+        <li>At Root, you start with option A. Failing with both C and D, you go back to Root and try option B.</li>
+        <li>At B, you explore E and succeed, so you achieve a good result.</li>
+        
+    </ol>
+    
+    <h3>The backtracking algorithm.</h3>
+    <p>Here is the algorithm (in pseudocode) for doing backtracking from a given node n:</p>
+    <pre style="color:rgb(42, 165, 112);font-size:16px;" >
+        boolean isGoalNode(Node node) {
+            // Base case: if the node is a leaf node
+            if (node.isLeaf()) {
+                // Check if the leaf node is the goal node
+                return node.isGoal();
+            }
+        
+            // Recursive case: check each child node
+            for (Node child : node.getChildren()) {
+                if (isGoalNode(child)) {
+                    return true; // Goal found in one of the children
+                }
+            }
+        
+            // Goal not found in any children
+            return false;
+        }
+        
+        
+    </pre>
+   
+    <ul>
+        <li>If any child of<font color = brown size=4> n</font> is solvable,then n is solvable</li>
+        <li>If no child of <font color = brown size = 4> n</font> is solvable, then n is not solvable.</li>
+    </ul>
+    <p>Hence, to decide whether any non-leaf node n is solvable (part of a path to a goal node), all you have to do is test whether any child of n is solvable. This is done recursively, on each child of n. In the above code, this is done by the lines</p>
+    <pre style="color:rgb(93, 42, 165);font-size:16px"> 
+        for each child c of n {
+            if solve(c) succeeds, return true
+        }
+        return false
+        
+    </pre>
+    <p>Eventually the recursion will "bottom" out at a leaf node. If the leaf node is a goal node, it is solvable; if the leaf node is not a goal node, it is not solvable. This is our base case. In the above code, this is done by the lines</p>
+    <pre style="color:rgb(144, 165, 42);font-size:16px">
+     if n is a leaf node {
+         if the leaf is a goal node, return true
+         else return false
+        }
+    </pre>
+    <p>The backtracking algorithm is simple but important. You should understand it thoroughly. Another way of stating it is as follows:</p>
+    <ul>
+        <li>To search a tree:</li><br>
+    <ol type="1">
+        <li>If the tree consists of a single leaf, test whether it is a goal node,</li>
+        <li>Otherwise,search the subtrees until you find one containing a goal node, or until you have searched them all unsuccessfully.</li>
+    </ol>
+    </ul>
+    <h3>Non-recursive backtracking, using a stack</h3>
+    <p>Backtracking is a rather typical recursive algorithm, and any recursive algorithm can be rewritten as a stack algorithm. In fact, that is how your recursive algorithms are translated into machine or assembly language</p>
+    <pre style="color:brown;font-size:16px">
+        boolean solve(Node n) {
+            put node n on the stack;
+            while the stack is not empty {
+                if the node at the top of the stack is a leaf {
+                    if it is a goal node, return true
+                    else pop it off the stack
+                }
+                else {
+                    if the node at the top of the stack has untried children
+                        push the next untried child onto the stack
+                    else pop the node off the stack
+            
+            }
+            return false
+        }
+        
+    </pre>
+    <p>Starting from the root, the only nodes that can be pushed onto the stack are the children of the node currently on the top of the stack, and these are only pushed on one child at a time; hence, the nodes on the stack at all times describe a valid path in the tree. Nodes are removed from the stack only when it is known that they have no goal nodes among their descendents. Therefore, if the root node gets removed (making the stack empty), there must have been no goal nodes at all, and no solution to the problem.</p>
+    <p>When the stack algorithm terminates successfully, the nodes on the stack form (in reverse order) a path from the root to a goal node</p>
+    <p>Similarly, when the recursive algorithm finds a goal node, the path information is embodied (in reverse order) in the sequence of recursive calls. Thus as the recursion unwinds, the path can be recovered one node at a time, by (for instance) printing the node at the current level, or storing it in an array.</p>
+    <p>Here is the recursive backtracking algorithm, modified slightly to print (in reverse order) the nodes along the successful path:</p>
+    <pre style="color:brown;font-size:16px">
+        boolean solve(Node n) {
+         if n is a leaf node {
+             if the leaf is a goal node {
+                 print n
+                 return true
+             }
+                 else return false
+            } else {
+                for each child c of n {
+                    if solve(c) succeeds {
+                        print n
+                        return true
+                    }
+                }
+                return false
+            }
+        }
+
+    </pre>
+    <h3>Keeping backtracking simple</h3>
+   
+    <p>For starters, let's do the simplest possible example of backtracking, which is searching an actual tree. We will also use the simplest kind of tree, a binary tree.</p>
+    <p>For starters, let's do the simplest possible example of backtracking, which is searching an actual tree. We will also use the simplest kind of tree, a binary tree.</p>
+    <p>A <b>binary tree </b> is a data structure composed of node. One <b>node</b> is designed as the<b>root</b> node. Each node can reference (point to) zero, one,or, teo other nides, which are called its<b>children</b> . the children are refered to as the <b>left child</b> and/or <b>rihgt child</b>. All nodes are reachable (by one or more steps) from the root node, and there are no cycles. For our purposes, although this is not part of the definition of a binary tree, we will say that a node might or might not be a goal node, and will contain its name. The first example in this paper (which we repeat here) shows a binary tree.</p>
+    <center>
+        <img src="https://imgs.search.brave.com/4x3b5tvOseEZVtEVlz6XP8H0sD8iIowYaiM0NYSZ568/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZWVrc2Zvcmdl/ZWtzLm9yZy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyMzEwMTAx/MjQxNDIvYmFja3Ry/YWNraW5nLnBuZw" alt="404 error">
+    </center>
+    <p>Here's a definition of the BinaryTree class:</p>
+    <pre style="color:brown;font-size:16px" >
+     public class BinaryTree {
+        BinaryTree leftChild = null;
+        BinaryTree rightChild = null;
+        boolean isGoalNode = false;
+        String name;
+            
+        BinaryTree(String name, BinaryTree left, BinaryTree right, boolean isGoalNode) {
+            this.name = name;
+            leftChild = left;
+            rightChild = right;
+            this.isGoalNode = isGoalNode;
+        }
+    }
+    </pre>
+    <p>next we will create a <font color="brown"size=4>TreeSearch</font> class, and in it we will define a method <font color="brown" size="4">makeTree</font> which constructs the above binary tree.</p>
+    <pre  style="color:rgb(140, 165, 42);font-size:16px">
+        static BinaryTree makeTree() {
+            BinaryTree root, a, b, c, d, e, f;
+            c = new BinaryTree("C", null, null, false);
+            d = new BinaryTree("D", null, null, false);
+            e = new BinaryTree("E", null, null, true);
+            f = new BinaryTree("F", null, null, false);
+            a = new BinaryTree("A", c, d, false);
+            b = new BinaryTree("B", e, f, false);
+            root = new BinaryTree("Root", a, b, false);
+            return root;
+        }
+        
+    </pre>
+    <p>Here's a main program to create a binary tree and try to solve it:</p>
+    <pre  style="color:brown;font-size:16px">
+        public static void main(String args[]) {
+            BinaryTree tree = makeTree();
+            System.out.println(solvable(tree));
+        }
+    </pre>
+    <p>And finally, here's the recursive backtracking routine to "solve" the binary tree by finding a goal node.</p>
+    <pre  style="color:brown;font-size:16px">
+        static boolean solvable(BinaryTree node) {
+    <span style="color:rgb(139, 178, 32);">/* 1 */</span>if (node == null) return false;
+    <span style="color:rgb(124, 178, 32);">/* 2 */</span> if (node.isGoalNode) return true;
+    <span style="color:rgb(71, 178, 32);">/* 3 */</span> if (solvable(node.leftChild)) return true;
+    <span style="color:rgb(61, 178, 32);">/* 4 */</span> if (solvable(node.rightChild)) return true;
+    <span style="color:lightseagreen;">/* 5 */</span>  return false;
+                }
+    </pre>
+    <p>Here's what the numbered lines are doing:</p>
+    <ol type="1">
+        <li>If we are given a null<font color="brown"size=4> node</font>, it's not solvable. This statement is so that we can call this method with the children of a node, without first checking whether those children actually exist.</li>
+        <li>If the node we are given is a goal node, return success.</li>
+        <li>See if the left child of<font color="brown"size=4> node </font>is solvable, and if so, conclude that<font color="brown" size="4"> node</font> is solvable. We will only get to this line if <font color="brown"size=4>node </font>is non-null and is not a goal node, says to</li>
+        <li>Do the same thing for the right child.</li>
+        <li>Since neither child of <font color="brown" size="4">node</font> is solvable, <font color="brown"size=4>node</font> itself is not solvable.</li>
+
+    </ol>
+    <p>This program runs correctly and produces the unenlightening result<font color="brown" size="4"> true</font></p>
+    <p>Each time we ask for another node, we have to check if it is null. In the above we put that check as the first thing <font color="brown"size=4>insolvable</font>. An alternative would be to check first whether each child exists, and recur only if they do. Here's that alternative version:</p>
+    <pre style="color:brown;font-size:16px">
+     static boolean solvable(BinaryTree node) {
+         if (node.isGoalNode) return true;
+         if (node.leftChild != null && solvable(node.leftChild)) return true;
+         if (node.rightChild != null && solvable(node.rightChild)) return true;
+         return false;
+        }
+        
+    </pre>
+    <p>I think the first version is simpler, but the second version is slightly more efficient.</p>
+    <br>
+    <h3>What are the children?</h3>
+    <p>One of the things that simplifies the above binary tree search is that, at each choice point, you can ignore all the previous choices. Previous choices don't give you any information about what you should do next; as far as you know, both the left and the right child are possible solutions. In many problems, however, you may be able to eliminate children immediately, without recursion.</p>
+    <p>Consider, for example, the problem of four-coloring a map. It is a theorem of mathematics that any map on a plane, no matter how convoluted the countries are, can be colored with at most four colors, so that no two countries that share a border are the same color.</p>
+    <p>To color a map, you choose a color for the first country, then a color for the second country, and so on, until all countries are colored. There are two ways to do this:</p>
+    <ul style="list-style-type:none">
+        <li style="margin-left:15px;"><strong>Method 1.</strong>Try each of the four possible colors, and recur. When you run out of countries, check whether you are at a goal node. </li>  
+          <li style="margin-left:15px;"><strong>Method 2.</strong> Try only those colors that have not already been used for an adjacent country, and recur. If and when you run out of countries, you have successfully colored the map.
+          </li>
+        </ul>      
+            <p>
+                Let's apply each of these two methods to the problem of coloring a checkerboard. This should be easily solvable; after all, a checkerboard only needs two colors.
+            </p>
+            <p>
+                In both methods, the colors are represented by integers, from<font color="brown" size="4"> RED=1 </font>to<font color="brown"size=4> BLUE=4</font>. We define the following helper methods. The helper method code isn't displayed here because it's not important for understanding the method that does the backtracking.
+            </p>
+            <dl>
+                <dt>
+                  <font color="brown" size="4">boolean mapIsOK()</font>
+                </dt>
+                <dd>
+                    Used by method 1 to check (at a leaf node) whether the entire map is colored correctly.
+                </dd><br>
+                <dt>
+                   <font color="brown" size="4"> boolean okToColor(int row, int column, int color)</font>
+                </dt>
+                <dd>
+                    Used by method 2 to check, at every node, whether there is an adjacent node already colored with the given color.</dd><br>
+                    <dt>
+                        int[] nextRowAndColumn(int row, int column)
+                    </dt>
+                    <dd>
+                        Used by both methods to find the next "country" (actually, the row and column of the next square on the checkerboard).
+                    </dd>
+
+                </dd>
+            </dl>
+            <p>
+                Here's the code for method 1:
+            </p>
+  <pre style="color: rgb(163, 165, 42);font-size:16px">
+    boolean explore1(int row, int column, int color) {
+        if (row >= NUM_ROWS)<font color="darkred" size="4" ><b> return mapIsOK()</b></font>;
+        map[row][column] = color;
+        for (int nextColor = RED; nextColor <= BLUE; nextColor++) {
+            int[] next = nextRowAndColumn(row, column);
+            if (explore1(next[0], next[1], nextColor)) return true;
+        }
+        return false;
+    }
+  </pre>
+  <p>And here's the code for method 2:</p>
+  <pre style="color: rgb(42, 165, 71);font-size:16px">
+    boolean explore2(int row, int column, int color) {
+        if (row >= NUM_ROWS)<font color="darkred" size="4"> <b> true</b></font>;
+     <font color="darkred" size="4"> <b>  if (okToColor(row, column, color))</b></font> {
+            map[row][column] = color;
+            for (int nextColor = RED; nextColor <= BLUE; nextColor++) {
+                int[] next = nextRowAndColumn(row, column);
+                if (explore2(next[0], next[1], nextColor)) return true;
+            }
+        }
+        return false;
+    }
+  </pre>
+  <p>
+    Those appear pretty similar, and you might think they are equally good. However, the timing information suggests otherwise:
+  </p>
+  <table border="1" align="center">
+    <tbody>
+       
+        <tr>
+            <td></td>
+            <td bgcolor="golden ">2 by 3 map </td>
+            <td bgcolor="golden">3 by 3 map</td>
+            <td bgcolor="golden "> 3 by 4 map</td>
+        </tr>
+        <tr>
+            <td bgcolor="golden">Method 1:</td>
+            <td>100 ms.</td>
+            <td>9409 ms.</td>
+            <td>605 ms.(1 minute)</td>
+        </tr>
+        <tr>
+            <td bgcolor="golden">Method 2:</td>
+            <td>0 ms.</td>
+            <td>0 ms.</td>
+            <td>0 ms.</td>
+        </tr>
+    </tbody>
+  </table>
+  
+  <pre style="color: rgb(77, 165, 42);font-size:16px" >
+    static String name(BinaryTree node) {
+        if (node == null) return null;
+        else return node.name;
+    }
+  
+  </pre>
+  <p>
+    To use this code, we modify solvable as follows:
+  </p>
+  <pre style="color: rgb(42, 140, 165);font-size:16px" >
+    static boolean solvable(BinaryTree node) {
+        <font color="brown"size=4><b>enter(node);</b> </font>
+       
+        if (solvable(node.rightChild)) return<font color="brown"size=4><b> yes(node);</b></font>
+        return <font color="brown"size=4><b>no(node);</b></font>
+    }
+  </pre>
+  <p>
+    And we get these results:
+  </p>
+  <pre style="color: rgb(0, 0, 0);font-size:16px">
+   <b>Entering solvable(Root)
+    |  Entering solvable(A)
+    |  |  Entering solvable(C)
+    |  |  |  Entering solvable(null)
+    |  |  |  solvable(null) returns false
+    
+    true</b>
+  </pre>
+  <p>
+    <b>Trick #3: Never discard your debugging statements.</b> Writing debugging statements is programming, too. Often it's as much work to debug the debugging statements as it is to debug the actual program. Once your program is working, why throw this code away?
+  </p>
+  <p>
+    Obviously, you don't want to print out all this debugging information from a program you are ready to submit (or to turn over to your manager). You could comment out your debugging calls, but that can be a lot of work. What's more, in the above example, you would have to replace every<font color="brown" size="4"> return(yes(node))</font> with <font color="brown" size="4">return(true)</font>, and every <font color="brown" size="4">return(no(node))</font> with <font color="brown" size="4">return(false).</font> With all these changes, you might introduce new bugs into your program.
+  </p>
+  <p>
+    The simple solution is to make your debugging statements conditional. For example,
+  </p>
+    <pre  style="color: rgb(165, 124, 42);font-size:16px">
+        <font color="brown"size=4> <b>static final boolean debugging = false;
+        </b></font>
+        static void enter(BinaryTree node) {
+            <font color="brown"size=4><b> if (debugging) {</b></font>
+                System.out.println(indent + "Entering solvable(" + name(node) + ")");
+                indent = indent + "|  ";
+            }
+        }
+        static boolean yes(BinaryTree node) {
+            <font color="brown"size=4><b>if (debugging) {</b></font>
+                indent = indent.substring(3);
+                System.out.println(indent + "solvable(" + name(node) + ") returns true");
+            }
+            return true;
+        }
+        static boolean no(BinaryTree node) {
+            <font color="brown"size=4><b>if (debugging) {</b></font>
+                indent = indent.substring(3);
+                System.out.println(indent + "solvable(" + name(node) + ") returns false");
+           <b> }</b>
+                return false;
+        }
+        </pre>
+        <p>
+            In industry, actual programs often have multiple flags to control different aspects of debugging. Don't worry too much about making your code larger; modern compilers will notice that since the variable <font color="brown"size=4>dibugging is final</font> , and the controlled code will be discarded.
+        </p>
+        <p>
+           <b> Trick #4: Create an Exception</b>. If an Exception is thrown, you can get information about just where it happened by sending it the message<font color="brown"size=4>printStackTrace(PrintStream)</font> . Since an Exception is an object like any other, you can create and throw your own Exceptions. However, Java programmers don't always realize that you can create an Exception <i>without</i> throwing it. For example, the following code
+        </p>
+        <p>
+            <font color="brown"size=4> new Exception("Checkpoint Charlie").printStackTrace(System.out);</font>
+        </p>
+        <p>
+            will print out a message something like this, and the program will then continue normally. That is, the above code just acts like a print statement.
+        </p>
+          <pre style="color: rgb(42, 71, 165);font-size:16px">
+  java.lang.Exception: Checkpoint Charlie
+        at TreeSearch.solvable(TreeSearch.java:53)
+        at TreeSearch.solvable(TreeSearch.java:57)
+        at TreeSearch.main(TreeSearch.java:72)
+        at _SHELL38.run(_SHELL38.java:16)
+        at bluej.runtime.ExecServer.suspendExecution(Unknown Source)
+    
+          </pre>
+          <h3>Example: Cindy's Puzzle</h3>
+          <p>
+            I call the following puzzle "Cindy's puzzle" for historical reasons. You have some number n of black marbles and the same number of white marbles, and you have a playing board which consists simply of a line of <font color="brown"size=4> 2n+1 </font>spaces to put the marbles in. Start with the black marbles all at one end (say, the left), the white marbles all at the other end, and a free space in between.
+          </p>
+          <table border="1" align="center" cellspacing="0" cellpadding="8">
+            <tbody >
+                <tr bgcolor="golden">
+                    <td width="44"><img src= "https://imgs.search.brave.com/3_SQDb9-UIK2zPoQHdQz6_5HyPsqC4aKNxodBvkCVos/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/dHV0b3JpYWxzcG9p/bnQuY29tL2RhdGFf/c3RydWN0dXJlc19h/bGdvcml0aG1zL2lt/YWdlcy9iYWNrdHJh/Y2tpbmcuanBn"></td>
+                    <td width="44"><img src= "https://imgs.search.brave.com/3_SQDb9-UIK2zPoQHdQz6_5HyPsqC4aKNxodBvkCVos/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/dHV0b3JpYWxzcG9p/bnQuY29tL2RhdGFf/c3RydWN0dXJlc19h/bGdvcml0aG1zL2lt/YWdlcy9iYWNrdHJh/Y2tpbmcuanBn"></td>
+                    <td width="44"> &nbsp; </td>
+                    <td width="44"><img src= "https://imgs.search.brave.com/3_SQDb9-UIK2zPoQHdQz6_5HyPsqC4aKNxodBvkCVos/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/dHV0b3JpYWxzcG9p/bnQuY29tL2RhdGFf/c3RydWN0dXJlc19h/bGdvcml0aG1zL2lt/YWdlcy9iYWNrdHJh/Y2tpbmcuanBnhttps://imgs.search.brave.com/3_SQDb9-UIK2zPoQHdQz6_5HyPsqC4aKNxodBvkCVos/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/dHV0b3JpYWxzcG9p/bnQuY29tL2RhdGFf/c3RydWN0dXJlc19h/bGdvcml0aG1zL2lt/YWdlcy9iYWNrdHJh/Y2tpbmcuanBn"></td>
+                    <td width="44"><img src= "https://imgs.search.brave.com/3_SQDb9-UIK2zPoQHdQz6_5HyPsqC4aKNxodBvkCVos/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/dHV0b3JpYWxzcG9p/bnQuY29tL2RhdGFf/c3RydWN0dXJlc19h/bGdvcml0aG1zL2lt/YWdlcy9iYWNrdHJh/Y2tpbmcuanBnhttps://imgs.search.brave.com/3_SQDb9-UIK2zPoQHdQz6_5HyPsqC4aKNxodBvkCVos/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/dHV0b3JpYWxzcG9p/bnQuY29tL2RhdGFf/c3RydWN0dXJlc19h/bGdvcml0aG1zL2lt/YWdlcy9iYWNrdHJh/Y2tpbmcuanBn"></td>    
+                </tr>
+            </tbody>
+          </table>
+          <p>
+            The goal is to reverse the positions of the marbles:
+          </p>
+          <table>
+            <table border="1" cellspacing="0" cellpadding="8" align="center">
+                <tr bgcolor="golden">
+                    <td width="44"><img src= "https://imgs.search.brave.com/3_SQDb9-UIK2zPoQHdQz6_5HyPsqC4aKNxodBvkCVos/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/dHV0b3JpYWxzcG9p/bnQuY29tL2RhdGFf/c3RydWN0dXJlc19h/bGdvcml0aG1zL2lt/YWdlcy9iYWNrdHJh/Y2tpbmcuanBn"></td>
+                    <td width="44"><img src= "https://imgs.search.brave.com/3_SQDb9-UIK2zPoQHdQz6_5HyPsqC4aKNxodBvkCVos/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/dHV0b3JpYWxzcG9p/bnQuY29tL2RhdGFf/c3RydWN0dXJlc19h/bGdvcml0aG1zL2lt/YWdlcy9iYWNrdHJh/Y2tpbmcuanBn"></td>
+                    <td width="44">&nbsp;</td>
+                    <td width="44"><img src= "https://imgs.search.brave.com/3_SQDb9-UIK2zPoQHdQz6_5HyPsqC4aKNxodBvkCVos/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/dHV0b3JpYWxzcG9p/bnQuY29tL2RhdGFf/c3RydWN0dXJlc19h/bGdvcml0aG1zL2lt/YWdlcy9iYWNrdHJh/Y2tpbmcuanBn"></td>
+                   <td width="44"><img src= "https://imgs.search.brave.com/3_SQDb9-UIK2zPoQHdQz6_5HyPsqC4aKNxodBvkCVos/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/dHV0b3JpYWxzcG9p/bnQuY29tL2RhdGFf/c3RydWN0dXJlc19h/bGdvcml0aG1zL2lt/YWdlcy9iYWNrdHJh/Y2tpbmcuanBn"></td>  
+                </tr>
+          </table>
+          <p>
+            The black marbles can only move to the right, and the white marbles can only move to the left (no backing up). At each move, a marble can either:
+          </p>
+          <ul>
+            <li>Move one space ahead, if that space is clear, or</li>
+            <li>Jump ahead over exactly one marble of the opposite color, if the space just beyond that marble is clear.</li>
+          </ul>
+          <p>
+            For example, you could make the following sequence of moves:
+          </p>
+          <table align="center" border="0" cellpadding="8" cellspacing="0">
+            <tbody>
+            <tr>
+                <td>
+                    <b>Starting position:</b>
+                </td>
+        
+                <td>
+                    <table border="1" cellspacing="0" cellpadding="6" align="center">
+                        <tbody>
+                            <tr bgcolor="golden">
+                                <td width="44"><img src= "https://imgs.search.brave.com/4x3b5tvOseEZVtEVlz6XP8H0sD8iIowYaiM0NYSZ568/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZWVrc2Zvcmdl/ZWtzLm9yZy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyMzEwMTAx/MjQxNDIvYmFja3Ry/YWNraW5nLnBuZw"></td>
+                                <td width="44"><img src= "https://imgs.search.brave.com/4x3b5tvOseEZVtEVlz6XP8H0sD8iIowYaiM0NYSZ568/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZWVrc2Zvcmdl/ZWtzLm9yZy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyMzEwMTAx/MjQxNDIvYmFja3Ry/YWNraW5nLnBuZw"></td>
+                                <td width="44"> &nbsp;</td>
+                                <td width="44"><img src= "https://imgs.search.brave.com/wvPqlXSU5f_WAYTZZ8aNZ1Gvem8DlIJFgsm4vChClsU/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9zY2Fs/ZXIuY29tL3RvcGlj/cy9pbWFnZXMvYmFj/a3RyYWNrLndlYnA"></td>
+                                <td width="44"><img src= "https://imgs.search.brave.com/wvPqlXSU5f_WAYTZZ8aNZ1Gvem8DlIJFgsm4vChClsU/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9zY2Fs/ZXIuY29tL3RvcGlj/cy9pbWFnZXMvYmFj/a3RyYWNrLndlYnA"></td>       
+                            </tr>
+                        </tbody>
+                    </table> 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <b>Black moves ahead:</b>
+                </td>
+                <td>
+        
+                    <table border="1" cellspacing="0" cellpadding="6" align="center">
+                    <tbody>
+                        <tr bgcolor="golden">
+                            <td width="44"><img src= "https://imgs.search.brave.com/4x3b5tvOseEZVtEVlz6XP8H0sD8iIowYaiM0NYSZ568/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZWVrc2Zvcmdl/ZWtzLm9yZy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyMzEwMTAx/MjQxNDIvYmFja3Ry/YWNraW5nLnBuZw"></td>
+                             <td width="44"> &nbsp;</td>
+                             <td width="44"><img src= "https://imgs.search.brave.com/4x3b5tvOseEZVtEVlz6XP8H0sD8iIowYaiM0NYSZ568/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZWVrc2Zvcmdl/ZWtzLm9yZy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyMzEwMTAx/MjQxNDIvYmFja3Ry/YWNraW5nLnBuZw"></td>
+                             <td width="44"><img src= "https://imgs.search.brave.com/wvPqlXSU5f_WAYTZZ8aNZ1Gvem8DlIJFgsm4vChClsU/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9zY2Fs/ZXIuY29tL3RvcGlj/cy9pbWFnZXMvYmFj/a3RyYWNrLndlYnA"></td>
+                             <td width="44"><img src= "https://imgs.search.brave.com/wvPqlXSU5f_WAYTZZ8aNZ1Gvem8DlIJFgsm4vChClsU/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9zY2Fs/ZXIuY29tL3RvcGlj/cy9pbWFnZXMvYmFj/a3RyYWNrLndlYnA"></td>  
+                        </tr>
+                    </tbody>
+                    </table>
+                </td>
+        </tr>
+        
+            <tr>
+                <td><b>White jumps:</b></td>
+                <td>
+                    <table border="1" cellspacing="0" cellpadding="6" align="center">
+                        <tbody>
+                        <tr bgcolor="golden">
+                            <td width="44"><img src= "https://imgs.search.brave.com/4x3b5tvOseEZVtEVlz6XP8H0sD8iIowYaiM0NYSZ568/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZWVrc2Zvcmdl/ZWtzLm9yZy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyMzEwMTAx/MjQxNDIvYmFja3Ry/YWNraW5nLnBuZw"></td>
+              
+                            <td width="44"><img src= "https://imgs.search.brave.com/wvPqlXSU5f_WAYTZZ8aNZ1Gvem8DlIJFgsm4vChClsU/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9zY2Fs/ZXIuY29tL3RvcGlj/cy9pbWFnZXMvYmFj/a3RyYWNrLndlYnA"></td>
+                            <td width="44"><img src= "https://imgs.search.brave.com/4x3b5tvOseEZVtEVlz6XP8H0sD8iIowYaiM0NYSZ568/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZWVrc2Zvcmdl/ZWtzLm9yZy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyMzEwMTAx/MjQxNDIvYmFja3Ry/YWNraW5nLnBuZw"></td>
+                            <td width="44">&nbsp;</td>
+                        <td width="44"><img src= "https://imgs.search.brave.com/wvPqlXSU5f_WAYTZZ8aNZ1Gvem8DlIJFgsm4vChClsU/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9zY2Fs/ZXIuY29tL3RvcGlj/cy9pbWFnZXMvYmFj/a3RyYWNrLndlYnA"></td>    
+                        </tr>
+                    </tbody>
+                    </table>
+                </td>
+            </tr>
+        
+            <tr>
+                <td><b>Black moves ahead:</b></td>
+                <td>
+                    <table border="1" cellspacing="0" cellpadding="6" align="center">
+                    <tbody>
+                        <tr bgcolor="golden">
+                          <td width="44"><img src= "https://imgs.search.brave.com/4x3b5tvOseEZVtEVlz6XP8H0sD8iIowYaiM0NYSZ568/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZWVrc2Zvcmdl/ZWtzLm9yZy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyMzEwMTAx/MjQxNDIvYmFja3Ry/YWNraW5nLnBuZw"></td>
+                          <td width="44"><img src= "https://imgs.search.brave.com/wvPqlXSU5f_WAYTZZ8aNZ1Gvem8DlIJFgsm4vChClsU/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9zY2Fs/ZXIuY29tL3RvcGlj/cy9pbWFnZXMvYmFj/a3RyYWNrLndlYnA"></td>
+                          <td width="44"> &nbsp;</td>
+                          <td width="44"><img src= "https://imgs.search.brave.com/4x3b5tvOseEZVtEVlz6XP8H0sD8iIowYaiM0NYSZ568/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZWVrc2Zvcmdl/ZWtzLm9yZy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyMzEwMTAx/MjQxNDIvYmFja3Ry/YWNraW5nLnBuZw"></td>
+                          <td width="44"><img src= "https://imgs.search.brave.com/wvPqlXSU5f_WAYTZZ8aNZ1Gvem8DlIJFgsm4vChClsU/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9zY2Fs/ZXIuY29tL3RvcGlj/cy9pbWFnZXMvYmFj/a3RyYWNrLndlYnA">
+                         </td>       
+                        </tr>
+                    </tbody>
+                    </table>
+                </td>
+            </tr>
+        
+            <tr>
+                <td><b>Black jumps:</b></td>
+                <td>
+                    <table border="1" cellspacing="0" cellpadding="6" align="center">
+                    <tbody>
+                        <tr bgcolor="golden">
+                            <td width="44">
+                             &nbsp;</td>
+                            <td width="44"><img src= "https://imgs.search.brave.com/wvPqlXSU5f_WAYTZZ8aNZ1Gvem8DlIJFgsm4vChClsU/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9zY2Fs/ZXIuY29tL3RvcGlj/cy9pbWFnZXMvYmFj/a3RyYWNrLndlYnA"></td>
+                            <td width="44"><img src= "https://imgs.search.brave.com/4x3b5tvOseEZVtEVlz6XP8H0sD8iIowYaiM0NYSZ568/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZWVrc2Zvcmdl/ZWtzLm9yZy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyMzEwMTAx/MjQxNDIvYmFja3Ry/YWNraW5nLnBuZw"></td>
+                            <td width="44"><img src= "https://imgs.search.brave.com/4x3b5tvOseEZVtEVlz6XP8H0sD8iIowYaiM0NYSZ568/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZWVrc2Zvcmdl/ZWtzLm9yZy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyMzEwMTAx/MjQxNDIvYmFja3Ry/YWNraW5nLnBuZw"></td>
+                            <td width="44"><img src= "https://imgs.search.brave.com/wvPqlXSU5f_WAYTZZ8aNZ1Gvem8DlIJFgsm4vChClsU/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9zY2Fs/ZXIuY29tL3RvcGlj/cy9pbWFnZXMvYmFj/a3RyYWNrLndlYnA"></td>       
+                        </tr>
+                    </tbody>
+                    </table>
+                </td>
+            </tr>
+        
+            <tr>
+                <td>
+                    <b>White moves ahead:</b>
+                 </td>
+                 <td>
+                    <table border="1" cellspacing="0" cellpadding="6" align="center">
+                    <tbody>
+                        <tr bgcolor="golden">
+                            <td width="44">&nbsp;</td>
+                            <td width="44"><img src= "https://imgs.search.brave.com/wvPqlXSU5f_WAYTZZ8aNZ1Gvem8DlIJFgsm4vChClsU/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9zY2Fs/ZXIuY29tL3RvcGlj/cy9pbWFnZXMvYmFj/a3RyYWNrLndlYnA"></td>
+                            <td width="44"><img src= "https://imgs.search.brave.com/4x3b5tvOseEZVtEVlz6XP8H0sD8iIowYaiM0NYSZ568/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZWVrc2Zvcmdl/ZWtzLm9yZy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyMzEwMTAx/MjQxNDIvYmFja3Ry/YWNraW5nLnBuZw"></td>
+                            <td width="44"><img src= "https://imgs.search.brave.com/4x3b5tvOseEZVtEVlz6XP8H0sD8iIowYaiM0NYSZ568/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZWVrc2Zvcmdl/ZWtzLm9yZy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyMzEwMTAx/MjQxNDIvYmFja3Ry/YWNraW5nLnBuZw"></td>
+                            <td width="44"><img src= "https://imgs.search.brave.com/wvPqlXSU5f_WAYTZZ8aNZ1Gvem8DlIJFgsm4vChClsU/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9zY2Fs/ZXIuY29tL3RvcGlj/cy9pbWFnZXMvYmFj/a3RyYWNrLndlYnA"></td>       
+                        </tr>
+                    </tbody>
+                    </table>
+                </td>
+            </tr>
+        
+            <tr>
+                <td><b>stuck!</b></td>
+                <td> &nbsp;</td>
+            </tr>
+            </tbody>
+        </table>
+        <p>
+            Now to the program. The main program will initialize the board, and call a recursive backtracking routine to attempt to solve the puzzle. The backtracking routine will either succeed and print out a winning path, or it will fail, and the main program will have to print out the bad news.
+        </p>
+        <p>
+            The backtracking method is named <font color="brown"size=4>solvable</font> and returns a <font color="brown"size=4>boolean</font>. In<font color="brown"size=4>solvable </font> we shall need to check whether we are at a leaf, which in this case means a position from which no further moves are possible. This isn't so easy.
+        </p>
+        
+        <p>
+            Now we have a simpler ordering of moves to use in our program. Just check, in order, the<font color="brown"size=4> 2n+1</font> spaces of the board. For each space, either zero or one moves is possible. With this understanding, we can write a boolean method <font color="brown"size=4>canMove(int[] board, int position)</font>
+        </p>
+        <ul>
+            <li>If the position is empty, no move is possible</li>
+            <li>If the position contains a black marble, the method checks for a move or jump to the right;</li>
+            <li>If the position contains a white marble, the method checks for a move or jump to the left.</li>
+        </ul>
+        <p>
+            We write another method <font color="brown"size=4>int[] makeMove(int[] oldBoard, int position)</font> that will take a board and a position, make a move from that position, and return as its value a new board. (We could write this somewhat more efficiently by changing the old board, rather than creating a new one, but here we are more concerned with simplicity.) In technical jargon, <font color="brown"size=4>makeMove </font>is "applicative" rather than "mutative."
+        </p>
+        <pre  style="color: brown;font-size:16px">
+            boolean isSolvable(int[] board) {
+                // Check if the current board configuration is a solution
+                if (isPuzzleSolved(board)) {
+                    return true;
+                }
+            
+                // Iterate over each possible position to make a move
+                for (int position = 0; position < BOARD_SIZE; position++) {
+                    // Check if a move can be made at the current position
+                    if (canMoveToPosition(board, position)) {
+                        // Create a new board configuration after making the move
+                        int[] newBoard = applyMove(board, position);
+        </pre>
+        <p>
+            Along with <font color="brown"size=4>canMove</font> and<font color="brown"size=4>makeMove</font> , we are using methods<font color="brown"size=4> puzzleSolved</font> And <font color="brown"size=4>printBoard</font> with meanings that should be obvious.
+        </p>
+        <p>
+            Here is some output from the program:
+        </p>
+        <pre align="left" style="font-size: 20px;">
+            <span><i><font color="#0000ff">16.</font></i><b><font>WHITE  WHITE  WHITE  _____  BLACK  BLACK  BLACK</font></b></span>
+            <span><i><font color="#0000ff">15.</font></i><b><font>WHITE  WHITE  WHITE  BLACK  _____  BLACK  BLACK</font></b></span>
+            <span><i><font color="#0000ff">14.</font></i><b><font>WHITE  WHITE  _____  BLACK  WHITE  BLACK  BLACK</font></b></span>
+            <span><i><font color="#0000ff">13.</font></i><b><font>WHITE  _____  WHITE  BLACK  WHITE  BLACK  BLACK</font></b></span>
+            <span><i><font color="#0000ff">12.</font></i><b><font>WHITE  BLACK  WHITE  _____  WHITE  BLACK  BLACK</font></b></span>
+<p>
+    Notice that the solution is given in reverse order: <font size=3>BLACK</font> starts out on the left and<font size="3"> WHITE </font>on the right, as in the last line. I've added line numbers to the actual output in order to emphasize this point. Backtracking always produces its results (sequence of choices) in reverse order; it is up to you, the programmer, to reverse the results again to get them in the correct order.
+</p>
+</body>
+</html>\
